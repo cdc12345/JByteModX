@@ -25,8 +25,8 @@ public class LanguageRes {
 
   public LanguageRes() {
     JByteMod.LOGGER.log("读取语言文件..");
-    this.readXML(map, getXML());
     JByteMod.LOGGER.log("正在读取语言文件"+getLanguage());
+    this.readXML(map, getXML());
     this.readXML(defaultMap, LanguageRes.class.getResourceAsStream("/locale/en.xml"));
     JByteMod.LOGGER.log("成功读取" + map.size() + "个本地化键和" + defaultMap.size() + "个默认键");
     this.fixUnicodeSupport();
@@ -84,7 +84,7 @@ public class LanguageRes {
   private InputStream getXML() {
     InputStream is = LanguageRes.class.getResourceAsStream("/locale/" + this.getLanguage() + ".xml");
     if (is == null) {
-      JByteMod.LOGGER.warn("Locale not found, using default en.xml");
+      JByteMod.LOGGER.warn("语言无法找到,正在使用默认");
       is = LanguageRes.class.getResourceAsStream("/locale/en.xml");
       if (is == null) {
         JByteMod.LOGGER.err("en.xml not found!");
@@ -94,6 +94,6 @@ public class LanguageRes {
   }
 
   private String getLanguage() {
-    return Locale.getDefault().toLanguageTag().toLowerCase(Locale.US).replace('_','-');
+    return System.getProperty("user.language").replace('_','-');
   }
 }
