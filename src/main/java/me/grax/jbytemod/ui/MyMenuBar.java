@@ -80,25 +80,15 @@ public class MyMenuBar extends JMenuBar {
 			JMenuItem save = new JMenuItem(JByteMod.res.getResource("save"));
 			JMenuItem saveas = new JMenuItem(JByteMod.res.getResource("save_as"));
 			JMenuItem load = new JMenuItem(JByteMod.res.getResource("load"));
-			load.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					openLoadDialogue();
-				}
-			});
-			save.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					if (lastFile != null) {
-						jbm.saveFile(lastFile);
-					} else {
-						openSaveDialogue();
-					}
-				}
-			});
-			saveas.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
+			load.addActionListener(e -> openLoadDialogue());
+			save.addActionListener(e -> {
+				if (lastFile != null) {
+					jbm.saveFile(lastFile);
+				} else {
 					openSaveDialogue();
 				}
 			});
+			saveas.addActionListener(e -> openSaveDialogue());
 			save.setAccelerator(KeyStroke.getKeyStroke('S', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 			load.setAccelerator(KeyStroke.getKeyStroke('N', Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
 			file.add(save);
@@ -779,7 +769,7 @@ public class MyMenuBar extends JMenuBar {
 	protected void openSaveDialogue() {
 		if (jbm.getFile() != null) {
 			boolean isClass = jbm.getFile().isSingleEntry();
-			JFileChooser jfc = new JFileChooser(new File(System.getProperty("user.home") + File.separator + "Desktop"));
+			JFileChooser jfc = new JFileChooser(new File(JByteMod.ops.get("lastPath").getString()).getParentFile());
 			jfc.setAcceptAllFileFilterUsed(false);
 			jfc.setDialogTitle("Save");
 			jfc.setFileFilter(new FileNameExtensionFilter(isClass ? "Java Class (*.class)" : "Java Package (*.jar)",
@@ -795,7 +785,7 @@ public class MyMenuBar extends JMenuBar {
 	}
 
 	protected void openLoadDialogue() {
-		JFileChooser jfc = new JFileChooser(new File(System.getProperty("user.home") + File.separator + "Desktop"));
+		JFileChooser jfc = new JFileChooser(new File(JByteMod.ops.get("lastPath").getString()).getParent());
 		jfc.setAcceptAllFileFilterUsed(false);
 		jfc.setFileFilter(new FileNameExtensionFilter("Java Package (*.jar) or Java Class (*.class)", "jar", "class"));
 		int result = jfc.showOpenDialog(this);

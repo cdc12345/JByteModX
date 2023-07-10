@@ -3,6 +3,7 @@ package me.grax.jbytemod.res;
 import java.awt.Font;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -23,10 +24,11 @@ public class LanguageRes {
   private final HashMap<String, String> defaultMap = new HashMap<>();
 
   public LanguageRes() {
-    JByteMod.LOGGER.log("Reading Language XML..");
+    JByteMod.LOGGER.log("读取语言文件..");
     this.readXML(map, getXML());
+    JByteMod.LOGGER.log("正在读取语言文件"+getLanguage());
     this.readXML(defaultMap, LanguageRes.class.getResourceAsStream("/locale/en.xml"));
-    JByteMod.LOGGER.log("Successfully loaded " + map.size() + " local resources and " + defaultMap.size() + " default resources");
+    JByteMod.LOGGER.log("成功读取" + map.size() + "个本地化键和" + defaultMap.size() + "个默认键");
     this.fixUnicodeSupport();
   }
 
@@ -66,7 +68,7 @@ public class LanguageRes {
       Element resources = doc.getDocumentElement();
       NodeList nodes = resources.getChildNodes();
       for (int i = 0; i < nodes.getLength(); i++) {
-        Node e = (Node) nodes.item(i);
+        Node e = nodes.item(i);
         if (e.getNodeName().equals("string")) {
           Element el = (Element) e;
           m.put(el.getAttribute("name"), e.getTextContent());
@@ -92,6 +94,6 @@ public class LanguageRes {
   }
 
   private String getLanguage() {
-    return System.getProperty("user.language").toLowerCase().replace('_', '-');
+    return Locale.getDefault().toLanguageTag().toLowerCase(Locale.US).replace('_','-');
   }
 }

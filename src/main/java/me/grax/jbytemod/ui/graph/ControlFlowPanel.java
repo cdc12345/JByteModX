@@ -60,34 +60,30 @@ public class ControlFlowPanel extends JPanel {
     for (int i = 0; i < 3; i++)
       rs.add(new JPanel());
     JButton save = new JButton(JByteMod.res.getResource("save"));
-    save.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if (node == null) {
-          return;
-        }
-        File parentDir = new File(System.getProperty("user.home") + File.separator + "Desktop");
-        JFileChooser jfc = new JFileChooser(parentDir);
-        jfc.setAcceptAllFileFilterUsed(false);
-        jfc.setFileFilter(new FileNameExtensionFilter("Bitmap image file (.bmp)", "bmp"));
-        jfc.addChoosableFileFilter(new FileNameExtensionFilter("Portable Network Graphics (.png)", "png"));
-        if (node.name.length() < 32) {
-          jfc.setSelectedFile(new File(parentDir, node.name + ".bmp"));
-        } else {
-          jfc.setSelectedFile(new File(parentDir, "method.bmp"));
-        }
-        int result = jfc.showSaveDialog(ControlFlowPanel.this);
-        if (result == JFileChooser.APPROVE_OPTION) {
-          File output = jfc.getSelectedFile();
-          String type = ((FileNameExtensionFilter) jfc.getFileFilter()).getExtensions()[0];
-          JByteMod.LOGGER.log("Saving graph as " + type + " file (" + output.getName() + ")");
-          BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
-          try {
-            ImageIO.write(ImageUtils.watermark(image), type, output);
-          } catch (IOException e1) {
-            new ErrorDisplay(e1);
-          }
+    save.addActionListener(e -> {
+      if (node == null) {
+        return;
+      }
+      File parentDir = new File(JByteMod.ops.get("lastPath").getString()).getParentFile();
+      JFileChooser jfc = new JFileChooser(parentDir);
+      jfc.setAcceptAllFileFilterUsed(false);
+      jfc.setFileFilter(new FileNameExtensionFilter("Bitmap image file (.bmp)", "bmp"));
+      jfc.addChoosableFileFilter(new FileNameExtensionFilter("Portable Network Graphics (.png)", "png"));
+      if (node.name.length() < 32) {
+        jfc.setSelectedFile(new File(parentDir, node.name + ".bmp"));
+      } else {
+        jfc.setSelectedFile(new File(parentDir, "method.bmp"));
+      }
+      int result = jfc.showSaveDialog(ControlFlowPanel.this);
+      if (result == JFileChooser.APPROVE_OPTION) {
+        File output = jfc.getSelectedFile();
+        String type = ((FileNameExtensionFilter) jfc.getFileFilter()).getExtensions()[0];
+        JByteMod.LOGGER.log("Saving graph as " + type + " file (" + output.getName() + ")");
+        BufferedImage image = mxCellRenderer.createBufferedImage(graph, null, 1, Color.WHITE, true, null);
+        try {
+          ImageIO.write(ImageUtils.watermark(image), type, output);
+        } catch (IOException e1) {
+          new ErrorDisplay(e1);
         }
       }
     });

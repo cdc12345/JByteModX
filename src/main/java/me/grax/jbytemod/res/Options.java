@@ -31,7 +31,8 @@ public class Options {
       new Option("analyze_errors", true, Type.BOOLEAN, "editor"), new Option("simplify_graph", true, Type.BOOLEAN, "graph"),
       new Option("remove_redundant", false, Type.BOOLEAN, "graph"), new Option("max_redundant_input", 2, Type.INT, "graph"),
       new Option("decompile_graph", true, Type.BOOLEAN, "graph"), new Option("primary_color", "#557799", Type.STRING, "color"),
-      new Option("secondary_color", "#995555", Type.STRING, "color"), new Option("use_weblaf", true, Type.BOOLEAN, "style")));
+      new Option("secondary_color", "#995555", Type.STRING, "color"), new Option("use_weblaf", true, Type.BOOLEAN, "style")
+          ,new Option("lastPath",System.getProperty("user.home") + File.separator + "Desktop",Type.STRING)));
 
   public Options() {
     initializeDecompilerOptions();
@@ -125,6 +126,7 @@ public class Options {
           pw.println(o.getName() + ":" + o.getType().name() + ":" + o.getGroup() + "=" + o.getValue());
         }
         pw.close();
+        JByteMod.LOGGER.log("正在存储");
       } catch (Exception e) {
         new ErrorDisplay(e);
       }
@@ -138,7 +140,7 @@ public class Options {
     }
     JOptionPane.showMessageDialog(null, "Missing option: " + name + "\nRewriting your config file!");
     this.initWithDefaults(false);
-    this.save();
+    save();
     op = find(name);
     if (op != null) {
       return op;

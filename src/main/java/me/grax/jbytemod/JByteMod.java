@@ -24,6 +24,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import me.grax.jbytemod.res.Option;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -158,29 +159,26 @@ public class JByteMod extends JFrame {
       configPath = line.getOptionValue("c");
     }
     initialize();
-    EventQueue.invokeLater(new Runnable() {
-
-      public void run() {
-        try {
-          if (!lafInit) {
-            LookUtils.setLAF();
-            lafInit = true;
-          }
-          JByteMod frame = new JByteMod(false);
-          instance = frame;
-          frame.setVisible(true);
-          if (line.hasOption("f")) {
-            File input = new File(line.getOptionValue("f"));
-            if (FileUtils.exists(input) && FileUtils.isType(input, ".jar", ".class")) {
-              frame.loadFile(input);
-              JByteMod.LOGGER.log("Specified file loaded");
-            } else {
-              JByteMod.LOGGER.err("Specified file not found");
-            }
-          }
-        } catch (Exception e) {
-          e.printStackTrace();
+    EventQueue.invokeLater(() -> {
+      try {
+        if (!lafInit) {
+          LookUtils.setLAF();
+          lafInit = true;
         }
+        JByteMod frame = new JByteMod(false);
+        instance = frame;
+        frame.setVisible(true);
+        if (line.hasOption("f")) {
+          File input = new File(line.getOptionValue("f"));
+          if (FileUtils.exists(input) && FileUtils.isType(input, ".jar", ".class")) {
+            frame.loadFile(input);
+            JByteMod.LOGGER.log("Specified file loaded");
+          } else {
+            JByteMod.LOGGER.err("Specified file not found");
+          }
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
       }
     });
   }
@@ -196,8 +194,8 @@ public class JByteMod extends JFrame {
     JByteMod.main(new String[0]);
   }
 
-  private JPanel contentPane;
-  private ClassTree jarTree;
+  private final JPanel contentPane;
+  private final ClassTree jarTree;
   private MyCodeList clist;
 
   private PageEndPanel pp;
@@ -212,7 +210,7 @@ public class JByteMod extends JFrame {
 
   private ControlFlowPanel cfp;
 
-  private MyMenuBar myMenuBar;
+  private final MyMenuBar myMenuBar;
 
   private ClassNode currentNode;
 
@@ -378,6 +376,12 @@ public class JByteMod extends JFrame {
     for (Plugin p : pluginManager.getPlugins()) {
       p.loadFile(file.getClasses());
     }
+
+    LOGGER.log("lastPath已经更新");
+    Option option = JByteMod.ops.get("lastPath");
+
+    option.setValue(input.getAbsolutePath());
+    JByteMod.ops.save();
   }
 
   public void refreshAgentClasses() {
