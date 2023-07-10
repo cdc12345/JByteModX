@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -18,17 +19,17 @@ public class PluginManager {
 
   private final ArrayList<Plugin> plugins = new ArrayList<>();
 
-  public PluginManager(JByteMod jbm) {
+  public PluginManager() {
     if (pluginFolder.exists() && pluginFolder.isDirectory()) {
       loadPlugins();
     } else {
-      JByteMod.LOGGER.err("No plugin folder found!");
+      JByteMod.LOGGER.err("插件目录未找到!");
     }
   }
 
   @SuppressWarnings("deprecation")
   private void loadPlugins() {
-    for (File f : pluginFolder.listFiles()) {
+    for (File f : Objects.requireNonNull(pluginFolder.listFiles())) {
       if (f.getName().endsWith(".jar")) {
         try {
           ZipFile zip = new ZipFile(f);
@@ -65,9 +66,9 @@ public class PluginManager {
     URLClassLoader sysloader = (URLClassLoader) ClassLoader.getSystemClassLoader();
     Class<?> sysclass = URLClassLoader.class;
     try {
-      Method method = sysclass.getDeclaredMethod("addURL", new Class[] { URL.class });
+      Method method = sysclass.getDeclaredMethod("addURL", URL.class);
       method.setAccessible(true);
-      method.invoke(sysloader, new Object[] { u });
+      method.invoke(sysloader, u);
     } catch (Throwable t) {
       t.printStackTrace();
     }

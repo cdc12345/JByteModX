@@ -83,7 +83,7 @@ public class JByteMod extends JFrame {
 
   public static JByteMod instance;
   public static Color border;
-  private static final String jbytemod = "JByteMod 1.9.0";
+  private static final String TITLE = "JByteMod 1.9.2";
   static {
     try {
       System.loadLibrary("attach");
@@ -145,14 +145,14 @@ public class JByteMod extends JFrame {
     }
     if (line.hasOption("help")) {
       HelpFormatter formatter = new HelpFormatter();
-      formatter.printHelp(jbytemod, options);
+      formatter.printHelp(TITLE, options);
       return;
     }
     if (line.hasOption("d")) {
       workingDir = new File(line.getOptionValue("d"));
       if (!(workingDir.exists() && workingDir.isDirectory())) {
         HelpFormatter formatter = new HelpFormatter();
-        formatter.printHelp(jbytemod, options);
+        formatter.printHelp(TITLE, options);
         return;
       }
       JByteMod.LOGGER.err("Specified working dir set");
@@ -196,7 +196,6 @@ public class JByteMod extends JFrame {
     JByteMod.main(new String[0]);
   }
 
-  private final JPanel contentPane;
   private final ClassTree jarTree;
   private MyCodeList clist;
 
@@ -254,10 +253,10 @@ public class JByteMod extends JFrame {
       border = new Color(146, 151, 161);
     }
     this.setBounds(100, 100, 1280, 720);
-    this.setTitle(jbytemod);
+    this.setTitle(TITLE);
     this.setJMenuBar(myMenuBar = new MyMenuBar(this, agent));
     this.jarTree = new ClassTree(this);
-    contentPane = new JPanel();
+    JPanel contentPane = new JPanel();
     contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
     contentPane.setLayout(new BorderLayout(5, 5));
     this.setContentPane(contentPane);
@@ -506,12 +505,12 @@ public class JByteMod extends JFrame {
   }
 
   private void setTitleSuffix(String suffix) {
-    this.setTitle(jbytemod + " - " + suffix);
+    this.setTitle(TITLE + " - " + suffix);
   }
 
   @Override
   public void setVisible(boolean b) {
-    this.setPluginManager(new PluginManager(this));
+    this.setPluginManager(new PluginManager());
     this.myMenuBar.addPluginMenu(pluginManager.getPlugins());
     super.setVisible(b);
   }
