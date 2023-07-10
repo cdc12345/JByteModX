@@ -551,16 +551,12 @@ public class MyMenuBar extends JMenuBar {
 			switch (op.getType()) {
 			case BOOLEAN:
 				JCheckBoxMenuItem jmi = new JCheckBoxMenuItem(lr.getResource(op.getName()), op.getBoolean());
-				jmi.addActionListener(new ActionListener() {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						op.setValue(jmi.isSelected());
-						o.save();
-						if (op.getName().equals("use_weblaf")) {
-							JByteMod.resetLAF();
-							JByteMod.restartGUI();
-						}
+				jmi.addActionListener(e -> {
+					op.setValue(jmi.isSelected());
+					o.save();
+					if (op.getName().equals("use_weblaf")) {
+						JByteMod.resetLAF();
+						JByteMod.restartGUI();
 					}
 				});
 				menu.add(jmi);
@@ -778,7 +774,7 @@ public class MyMenuBar extends JMenuBar {
 			if (result == JFileChooser.APPROVE_OPTION) {
 				File output = jfc.getSelectedFile();
 				this.lastFile = output;
-				JByteMod.LOGGER.log("Selected output file: " + output.getAbsolutePath());
+				JByteMod.LOGGER.log("输出jar: " + output.getAbsolutePath());
 				jbm.saveFile(output);
 			}
 		}

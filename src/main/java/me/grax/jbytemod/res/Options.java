@@ -37,12 +37,12 @@ public class Options {
   public Options() {
     initializeDecompilerOptions();
     if (propFile.exists()) {
-      JByteMod.LOGGER.log("Loading settings... ");
+      JByteMod.LOGGER.log("载入配置中... ");
       try {
         Files.lines(propFile.toPath()).forEach(l -> {
           int split = l.indexOf('=');
           String part1 = l.substring(0, split);
-          String part2 = split == l.length() ? "" : l.substring(split + 1, l.length());
+          String part2 = l.substring(split + 1);
           String[] def = part1.split(":");
           try {
             bools.add(new Option(def[0], part2, Type.valueOf(def[1]), def[2]));

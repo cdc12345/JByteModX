@@ -72,6 +72,8 @@ public class JByteMod extends JFrame {
   public static LanguageRes res;
   public static Options ops;
 
+  public static boolean isSaved = true;
+
   private static boolean lafInit;
 
   private static JarArchive file;
@@ -231,15 +233,21 @@ public class JByteMod extends JFrame {
     this.addWindowListener(new WindowAdapter() {
       @Override
       public void windowClosing(WindowEvent we) {
-        if (JOptionPane.showConfirmDialog(JByteMod.this, res.getResource("exit_warn"), res.getResource("is_sure"),
-            JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-          if (agent) {
-            dispose();
-          } else {
-            Runtime.getRuntime().exit(0);
-          }
+        if (isSaved) {
+          exit();
+        } else if (JOptionPane.showConfirmDialog(JByteMod.this, res.getResource("exit_warn"), res.getResource("is_sure"),
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+          exit();
         }
       }
+      private void exit() {
+        if (agent) {
+          dispose();
+        } else {
+          Runtime.getRuntime().exit(0);
+        }
+      }
+
     });
     border = UIManager.getColor("nimbusBorder");
     if (border == null) {
@@ -402,6 +410,8 @@ public class JByteMod extends JFrame {
     } catch (Throwable t) {
       new ErrorDisplay(t);
     }
+
+    isSaved = true;
   }
 
   public void selectClass(ClassNode cn) {

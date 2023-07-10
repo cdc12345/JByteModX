@@ -28,7 +28,7 @@
    <string name="collapse_all">全部折叠</string>
    <string name="about">关于</string>
    <string name="licenses">许可</string>
-   <string name="java_archive">Jar文件</string>
+   <string name="java_archive">包</string>
    <string name="settings">设置</string>
    <string name="search">搜索</string>
    <string name="search_results">搜索结果</string>

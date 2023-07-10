@@ -74,6 +74,7 @@ public class MyCodeList extends JList<InstrEntry> {
             rightClickField(jam, (FieldEntry) entry, MyCodeList.this.getSelectedValuesList());
           }
         } else if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
+          JByteMod.isSaved = false;
           if (mn != null) {
             try {
               if (InsnEditDialogue.canEdit(entry.getInstr())) {

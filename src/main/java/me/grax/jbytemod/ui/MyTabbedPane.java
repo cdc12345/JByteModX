@@ -18,6 +18,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.border.EmptyBorder;
 import javax.swing.plaf.TabbedPaneUI;
 
+import me.lpk.util.drop.JarDropHandler;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
@@ -43,7 +44,7 @@ public class MyTabbedPane extends JTabbedPane {
       @Override
       public void mouseClicked(MouseEvent me) {
         if (me.getButton() == 3) {
-          int tabNr = ((TabbedPaneUI) getUI()).tabForCoordinate(MyTabbedPane.this, me.getX(), me.getY());
+          int tabNr = getUI().tabForCoordinate(MyTabbedPane.this, me.getX(), me.getY());
           if (tabNr == 0) {
             JPopupMenu menu = new JPopupMenu();
             for (ClassNode cn : JByteMod.lastSelectedTreeEntries.keySet()) {
@@ -72,6 +73,7 @@ public class MyTabbedPane extends JTabbedPane {
         }
       }
     });
+    this.setTransferHandler(new JarDropHandler(jbm.getJarTree(), 1));
   }
 
   public void selectClass(ClassNode cn) {

@@ -75,7 +75,7 @@ public class LanguageRes {
         }
       }
     } catch (Exception e) {
-      JByteMod.LOGGER.err("Failed to load resources: " + e.getMessage());
+      JByteMod.LOGGER.err("无法载入资源: " + e.getMessage());
       e.printStackTrace();
       new ErrorDisplay(e);
     }
@@ -87,7 +87,7 @@ public class LanguageRes {
       JByteMod.LOGGER.warn("语言无法找到,正在使用默认");
       is = LanguageRes.class.getResourceAsStream("/locale/en.xml");
       if (is == null) {
-        JByteMod.LOGGER.err("en.xml not found!");
+        JByteMod.LOGGER.err("en.xml无法找到!");
       }
     }
     return is;
