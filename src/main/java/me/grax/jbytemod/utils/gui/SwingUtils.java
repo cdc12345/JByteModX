@@ -23,12 +23,16 @@ public class SwingUtils {
   }
 
   public static void disableSelection(JList<?> jl) {
-    ListUI ui = (ListUI) jl.getUI();
+    ListUI ui = jl.getUI();
     if (ui instanceof WebListUI) {
       WebListUI wlui = (WebListUI) ui;
       wlui.setHighlightRolloverCell(false);
       wlui.setDecorateSelection(false);
     }
 
+  }
+
+  public static void desireFont(Component component,float size){
+    component.setFont(component.getFont().deriveFont(size));
   }
 }

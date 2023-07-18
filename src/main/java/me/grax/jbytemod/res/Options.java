@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.swing.JOptionPane;
 
@@ -18,21 +19,35 @@ import me.grax.jbytemod.JByteMod;
 import me.grax.jbytemod.decompiler.CFRDecompiler;
 import me.grax.jbytemod.decompiler.FernflowerDecompiler;
 import me.grax.jbytemod.res.Option.Type;
+import me.grax.jbytemod.res.renders.IntegerSliderOptionRenderer;
 import me.grax.jbytemod.utils.ErrorDisplay;
 
+/**
+ * 配置类
+ */
 public class Options {
   private static final File propFile = new File(JByteMod.workingDir, JByteMod.configPath);
 
-  public List<Option> bools = new ArrayList<>();
-  public List<Option> defaults = new ArrayList<>(Arrays.asList(new Option("sort_methods", false, Type.BOOLEAN),
-      new Option("use_rt", false, Type.BOOLEAN), new Option("compute_maxs", true, Type.BOOLEAN), new Option("select_code_tab", true, Type.BOOLEAN),
-      new Option("memory_warning", true, Type.BOOLEAN), new Option("python_path", "", Type.STRING),
-      new Option("hints", false, Type.BOOLEAN, "editor"), new Option("copy_formatted", false, Type.BOOLEAN, "editor"),
-      new Option("analyze_errors", true, Type.BOOLEAN, "editor"), new Option("simplify_graph", true, Type.BOOLEAN, "graph"),
-      new Option("remove_redundant", false, Type.BOOLEAN, "graph"), new Option("max_redundant_input", 2, Type.INT, "graph"),
-      new Option("decompile_graph", true, Type.BOOLEAN, "graph"), new Option("primary_color", "#557799", Type.STRING, "color"),
-      new Option("secondary_color", "#995555", Type.STRING, "color"), new Option("use_weblaf", true, Type.BOOLEAN, "style")
-          ,new Option("lastPath",System.getProperty("user.home") + File.separator + "Desktop",Type.STRING)));
+  private List<Option> importedOptions = new ArrayList<>();
+  private final List<Option> defaults = new ArrayList<>(Arrays.asList(
+          new Option("sort_methods", false, Type.BOOLEAN),
+      new Option("use_rt", false, Type.BOOLEAN),
+          new Option("compute_maxs", true, Type.BOOLEAN),
+          new Option("select_code_tab", true, Type.BOOLEAN),
+      new Option("memory_warning", true, Type.BOOLEAN),
+          new Option("python_path", "", Type.STRING),
+      new Option("hints", false, Type.BOOLEAN, "editor"),
+          new Option("copy_formatted", false, Type.BOOLEAN, "editor"),
+      new Option("analyze_errors", true, Type.BOOLEAN, "editor"),
+          new Option("simplify_graph", true, Type.BOOLEAN, "graph"),
+      new Option("remove_redundant", false, Type.BOOLEAN, "graph"),
+          new Option("max_redundant_input", 2, Type.INT, "graph"),
+      new Option("decompile_graph", true, Type.BOOLEAN, "graph"),
+          new Option("primary_color", "#557799", Type.STRING, "color"),
+      new Option("secondary_color", "#995555", Type.STRING, "color"),
+          new Option("use_weblaf", true, Type.BOOLEAN, "style")
+          ,new OptionBuilder().setName("lastPath").setValue(System.getProperty("user.home")+ "/Desktop").setVisible(false).setOptionRenderer(null).build()
+  ,new OptionBuilder().setName("fontSize").setValue(20).setType(Type.INT).setOptionRenderer(new IntegerSliderOptionRenderer(0,20)).build()));
 
   public Options() {
     initializeDecompilerOptions();
@@ -40,28 +55,32 @@ public class Options {
       JByteMod.LOGGER.log("载入配置中... ");
       try {
         Files.lines(propFile.toPath()).forEach(l -> {
-          int split = l.indexOf('=');
-          String part1 = l.substring(0, split);
-          String part2 = l.substring(split + 1);
-          String[] def = part1.split(":");
+          String[] split = l.split("=");
+          String value = (split.length != 2)?"":split[1];
           try {
-            bools.add(new Option(def[0], part2, Type.valueOf(def[1]), def[2]));
+            importedOptions.add(new Option(split[0], value, Type.STRING,""));
           } catch (Exception e) {
-            JByteMod.LOGGER.warn("Couldn't parse line: " + l);
+            JByteMod.LOGGER.warn("不能解析行: " + l);
           }
         });
-        for (int i = 0; i < bools.size(); i++) {
-          Option o1 = bools.get(i);
+        for (int i = 0; i < importedOptions.size(); i++) {
+          Option o1 = importedOptions.get(i);
           Option o2 = defaults.get(i);
           if (o1 == null || o2 == null || find(o2.getName()) == null || findDefault(o1.getName()) == null) {
-            JByteMod.LOGGER.warn("Option file not matching defaults, maybe from old version?");
+            JByteMod.LOGGER.warn("配置无法匹配实例,也许它来自旧版本?");
+            //覆盖配置
             this.initWithDefaults(true);
             this.save();
             return;
           }
+          //一些比较特殊的配置不会被存入文件中
+          o1.setVisible(o2.isVisible());
+          o1.setType(o2.getType());
+          o1.setGroup(o2.getGroup());
+          o1.setRenderer(o2.getOptionRenderer());
         }
-        if (bools.isEmpty()) {
-          JByteMod.LOGGER.warn("Couldn't read file, probably empty");
+        if (importedOptions.isEmpty()) {
+          JByteMod.LOGGER.warn("无法读取文件,也许为空");
           this.initWithDefaults(false);
           this.save();
         }
@@ -97,19 +116,17 @@ public class Options {
 
   private void initWithDefaults(boolean keepExisting) {
     if (keepExisting) {
+      //如果不存在默认,则添加
       for (Option o : defaults) {
         if (find(o.getName()) == null) {
-          bools.add(o);
+          importedOptions.add(o);
         }
       }
-      for (Option o : new ArrayList<>(bools)) {
-        if (findDefault(o.getName()) == null) {
-          bools.remove(o);
-        }
-      }
+      //如果默认不存在,则去除
+      importedOptions.removeIf(o -> findDefault(o.getName()) == null);
     } else {
-      bools = new ArrayList<>();
-      bools.addAll(defaults);
+      importedOptions.clear();
+      importedOptions.addAll(defaults);
     }
   }
 
@@ -119,11 +136,11 @@ public class Options {
         if (!propFile.exists()) {
           propFile.getParentFile().mkdirs();
           propFile.createNewFile();
-          JByteMod.LOGGER.log("Prop file doesn't exist, creating.");
+          JByteMod.LOGGER.log("配置文件不存在,正在创建");
         }
         PrintWriter pw = new PrintWriter(propFile);
-        for (Option o : bools) {
-          pw.println(o.getName() + ":" + o.getType().name() + ":" + o.getGroup() + "=" + o.getValue());
+        for (Option o : importedOptions) {
+          pw.println(o.getName()+"=" + o.getValue());
         }
         pw.close();
         JByteMod.LOGGER.log("正在存储");
@@ -145,13 +162,13 @@ public class Options {
     if (op != null) {
       return op;
     }
-    throw new RuntimeException("Option not found: " + name);
+    throw new RuntimeException("无法找到配置: " + name);
   }
 
   private Option find(String name) {
-    for (Option o : bools) {
+    for (Option o : importedOptions) {
       if (o.getName().equalsIgnoreCase(name)) {
-        return o;
+          return o;
       }
     }
     return null;
@@ -164,6 +181,10 @@ public class Options {
       }
     }
     return null;
+  }
+
+  public List<Option> getImportedOptions(){
+    return importedOptions.stream().filter(Option::isVisible).collect(Collectors.toList());
   }
 
 }

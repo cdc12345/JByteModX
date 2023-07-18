@@ -35,6 +35,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import me.grax.jbytemod.utils.gui.SwingUtils;
 import org.apache.commons.io.IOUtils;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -75,11 +76,16 @@ public class MyMenuBar extends JMenuBar {
 	}
 
 	private void initFileMenu() {
+		int fontSize = JByteMod.ops.get("fontSize").getInteger();
 		JMenu file = new JMenu(JByteMod.res.getResource("file"));
+		SwingUtils.desireFont(file,fontSize);
 		if (!agent) {
 			JMenuItem save = new JMenuItem(JByteMod.res.getResource("save"));
+			SwingUtils.desireFont(save,fontSize);
 			JMenuItem saveas = new JMenuItem(JByteMod.res.getResource("save_as"));
+			SwingUtils.desireFont(saveas,fontSize);
 			JMenuItem load = new JMenuItem(JByteMod.res.getResource("load"));
+			SwingUtils.desireFont(load,fontSize);
 			load.addActionListener(e -> openLoadDialogue());
 			save.addActionListener(e -> {
 				if (lastFile != null) {
@@ -96,305 +102,234 @@ public class MyMenuBar extends JMenuBar {
 			file.add(load);
 		} else {
 			JMenuItem refresh = new JMenuItem(JByteMod.res.getResource("refresh"));
-			refresh.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					jbm.refreshAgentClasses();
-				}
-			});
+			SwingUtils.desireFont(refresh,fontSize);
+			refresh.addActionListener(e -> jbm.refreshAgentClasses());
 			file.add(refresh);
 			JMenuItem apply = new JMenuItem(JByteMod.res.getResource("apply"));
-			apply.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					jbm.applyChangesAgent();
-				}
-			});
+			SwingUtils.desireFont(apply,fontSize);
+			apply.addActionListener(e -> jbm.applyChangesAgent());
 			file.add(apply);
 		}
 		this.add(file);
 
 		JMenu search = new JMenu(JByteMod.res.getResource("search"));
+		SwingUtils.desireFont(search,fontSize);
 		JMenuItem ldc = new JMenuItem(JByteMod.res.getResource("search_ldc"));
-		ldc.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				searchLDC();
-			}
-		});
+		SwingUtils.desireFont(ldc,fontSize);
+		ldc.addActionListener(e -> searchLDC());
 
 		search.add(ldc);
 		JMenuItem field = new JMenuItem(JByteMod.res.getResource("search_field"));
-		field.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				searchField();
-			}
-		});
+		SwingUtils.desireFont(field,fontSize);
+		field.addActionListener(e -> searchField());
 
 		search.add(field);
 		JMenuItem method = new JMenuItem(JByteMod.res.getResource("search_method"));
-		method.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				searchMethod();
-			}
-		});
+		SwingUtils.desireFont(method,fontSize);
+		method.addActionListener(e -> searchMethod());
 
 		search.add(method);
 		JMenuItem replace = new JMenuItem(JByteMod.res.getResource("replace_ldc"));
-		replace.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				replaceLDC();
-			}
-		});
+		SwingUtils.desireFont(replace,fontSize);
+		replace.addActionListener(e -> replaceLDC());
 
 		search.add(replace);
 		this.add(search);
 		JMenu utils = new JMenu(JByteMod.res.getResource("utils"));
+		SwingUtils.desireFont(utils,fontSize);
 		JMenuItem accman = new JMenuItem("Access Helper");
-		accman.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				new JAccessHelper().setVisible(true);
-			}
-		});
+		SwingUtils.desireFont(utils,fontSize);
+		accman.addActionListener(e -> new JAccessHelper().setVisible(true));
 		utils.add(accman);
 		JMenuItem attach = new JMenuItem(JByteMod.res.getResource("attach"));
-		attach.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				openProcessSelection();
-			}
-		});
+		SwingUtils.desireFont(attach,fontSize);
+		attach.addActionListener(e -> openProcessSelection());
 		utils.add(attach);
 		JMenu obf = new JMenu("Obfuscation Analysis");
+		SwingUtils.desireFont(obf,fontSize);
 		utils.add(obf);
 		JMenuItem nameobf = new JMenuItem("Name Obfuscation");
-		nameobf.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (jbm.getFile() != null)
-					new JNameObfAnalysis(jbm.getFile().getClasses()).setVisible(true);
-			}
+		SwingUtils.desireFont(nameobf,fontSize);
+		nameobf.addActionListener(e -> {
+			if (jbm.getFile() != null)
+				new JNameObfAnalysis(jbm.getFile().getClasses()).setVisible(true);
 		});
 		obf.add(nameobf);
 		JMenuItem methodobf = new JMenuItem("Method Obfuscation");
-		methodobf.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (jbm.getFile() != null)
-					new JMethodObfAnalysis(jbm.getFile().getClasses()).setVisible(true);
-			}
+		SwingUtils.desireFont(methodobf,fontSize);
+		methodobf.addActionListener(e -> {
+			if (jbm.getFile() != null)
+				new JMethodObfAnalysis(jbm.getFile().getClasses()).setVisible(true);
 		});
 		obf.add(methodobf);
 		this.add(utils);
 		JMenu tree = new JMenu("Tree");
+		SwingUtils.desireFont(tree,fontSize);
 		utils.add(tree);
 		JMenuItem rltree = new JMenuItem(JByteMod.res.getResource("tree_reload"));
-		rltree.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				jbm.getJarTree().refreshTree(jbm.getFile());
-			}
-		});
+		SwingUtils.desireFont(rltree,fontSize);
+		rltree.addActionListener(e -> jbm.getJarTree().refreshTree(jbm.getFile()));
 		tree.add(rltree);
 		JMenuItem collapse = new JMenuItem(JByteMod.res.getResource("collapse_all"));
-		collapse.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				jbm.getJarTree().collapseAll();
-			}
-		});
+		SwingUtils.desireFont(collapse,fontSize);
+		collapse.addActionListener(e -> jbm.getJarTree().collapseAll());
 		tree.add(collapse);
 		JMenu searchUtils = new JMenu(JByteMod.res.getResource("search"));
+		SwingUtils.desireFont(searchUtils,fontSize);
 		utils.add(searchUtils);
 		JMenuItem url = new JMenuItem(JByteMod.res.getResource("url_search"));
-		url.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				jbm.getSearchList().searchForPatternRegex(Patterns.AUTOLINK_WEB_URL);
-			}
-		});
+		url.addActionListener(e -> jbm.getSearchList().searchForPatternRegex(Patterns.AUTOLINK_WEB_URL));
 		searchUtils.add(url);
 		JMenuItem email = new JMenuItem(JByteMod.res.getResource("email_search"));
-		email.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				jbm.getSearchList().searchForPatternRegex(Patterns.EMAIL_ADDRESS);
-			}
-		});
+		SwingUtils.desireFont(email,fontSize);
+		email.addActionListener(e -> jbm.getSearchList().searchForPatternRegex(Patterns.EMAIL_ADDRESS));
 		searchUtils.add(email);
 		// Utils:
 		JMenu deobfTools = new JMenu(JByteMod.res.getResource("deobf_tools"));
+		SwingUtils.desireFont(deobfTools,fontSize);
 		utils.add(deobfTools);
 
 		// From old version of JbyteMod by Grax
 		JMenuItem sourceRename = new JMenuItem(JByteMod.res.getResource("rename_sourcefiles"));
-		sourceRename.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				if (jbm.getFile().getClasses() == null)
-					return;
-				if (JOptionPane.showConfirmDialog(null, JByteMod.res.getResource("rename_sourcefiles_warnning"),
-						JByteMod.res.getResource("confirm"), 0) == 0) {
-					int i = 0;
-					for (final ClassNode c : jbm.getFile().getClasses().values()) {
-						c.sourceFile = "Class" + i++ + ".java";
-					}
+		SwingUtils.desireFont(sourceRename,fontSize);
+		sourceRename.addActionListener(e -> {
+			if (jbm.getFile().getClasses() == null)
+				return;
+			if (JOptionPane.showConfirmDialog(null, JByteMod.res.getResource("rename_sourcefiles_warnning"),
+					JByteMod.res.getResource("confirm"), 0) == 0) {
+				int i = 0;
+				for (final ClassNode c : jbm.getFile().getClasses().values()) {
+					c.sourceFile = "Class" + i++ + ".java";
 				}
 			}
 		});
 		deobfTools.add(sourceRename);
 
 		JMenuItem findSF = new JMenuItem(JByteMod.res.getResource("find_sourcefiles"));
-		findSF.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				if (jbm.getFile() == null) {
-					return;
-				}
-				final JPanel panel = new JPanel(new BorderLayout(5, 5));
-				final JPanel input = new JPanel(new GridLayout(0, 1));
-				final JPanel labels = new JPanel(new GridLayout(0, 1));
-				panel.add(labels, "West");
-				panel.add(input, "Center");
-				// panel.add(new JLabel(JByteMod.res.getResource("big_jar_warn")), "South");
-				labels.add(new JLabel(JByteMod.res.getResource("find_sourcefiles_input_name")));
-				final JTextField sf = new JTextField();
-				input.add(sf);
-				if (JOptionPane.showConfirmDialog(JByteMod.instance, panel, JByteMod.res.getResource("find_sourcefiles"),
-						2) == 0 && !sf.getText().isEmpty()) {
-					jbm.getSearchList().searchForSF(sf.getText());
-				}
+		SwingUtils.desireFont(findSF,fontSize);
+		findSF.addActionListener(e -> {
+			if (jbm.getFile() == null) {
+				return;
+			}
+			final JPanel panel = new JPanel(new BorderLayout(5, 5));
+			final JPanel input = new JPanel(new GridLayout(0, 1));
+			final JPanel labels = new JPanel(new GridLayout(0, 1));
+			panel.add(labels, "West");
+			panel.add(input, "Center");
+			// panel.add(new JLabel(JByteMod.res.getResource("big_jar_warn")), "South");
+			labels.add(new JLabel(JByteMod.res.getResource("find_sourcefiles_input_name")));
+			final JTextField sf = new JTextField();
+			input.add(sf);
+			if (JOptionPane.showConfirmDialog(JByteMod.instance, panel, JByteMod.res.getResource("find_sourcefiles"),
+					2) == 0 && !sf.getText().isEmpty()) {
+				jbm.getSearchList().searchForSF(sf.getText());
 			}
 		});
 		search.add(findSF);
 
 		JMenuItem findClass = new JMenuItem(JByteMod.res.getResource("find_class_by_name"));
-		findClass.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				if (jbm.getFile().getClasses() == null) {
-					return;
-				}
-				final JPanel panel = new JPanel(new BorderLayout(5, 5));
-				final JPanel input = new JPanel(new GridLayout(0, 1));
-				final JPanel labels = new JPanel(new GridLayout(0, 1));
-				panel.add(labels, "West");
-				panel.add(input, "Center");
-				// panel.add(new JLabel(JByteMod.res.getResource("big_jar_warn")), "South");
-				labels.add(new JLabel(JByteMod.res.getResource("find_class_input_name")));
-				final JTextField cst = new JTextField();
-				input.add(cst);
-				if (JOptionPane.showConfirmDialog(JByteMod.instance, panel, JByteMod.res.getResource("find_class_by_name"),
-						2) == 0 && !cst.getText().isEmpty()) {
-					LazyListModel<SearchEntry> model = new LazyListModel<>();
-					for (final ClassNode cn : jbm.getFile().getClasses().values()) {
-						if (cn.name != null && cn.name.contains(cst.getText())) {
-							// TODO: task
-							SearchEntry se = new SearchEntry(cn, cn.methods.get(0), TextUtils.escape(TextUtils.max(cn.name, 100)));
-							se.setText(TextUtils.toHtml(TextUtils.escape(TextUtils.max(cn.name, 100))));
-							model.addElement(se);
-						}
-					}
-					jbm.getSearchList().setModel(model);
-				}
+		SwingUtils.desireFont(findClass,fontSize);
+		findClass.addActionListener(e -> {
+			if (jbm.getFile().getClasses() == null) {
+				return;
 			}
-		});
-		search.add(findClass);
-
-		JMenuItem clazz_main = new JMenuItem(JByteMod.res.getResource("find_main_class"));
-		clazz_main.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				if (jbm.getFile().getClasses() == null) {
-					return;
-				}
+			final JPanel panel = new JPanel(new BorderLayout(5, 5));
+			final JPanel input = new JPanel(new GridLayout(0, 1));
+			final JPanel labels = new JPanel(new GridLayout(0, 1));
+			panel.add(labels, "West");
+			panel.add(input, "Center");
+			// panel.add(new JLabel(JByteMod.res.getResource("big_jar_warn")), "South");
+			labels.add(new JLabel(JByteMod.res.getResource("find_class_input_name")));
+			final JTextField cst = new JTextField();
+			input.add(cst);
+			if (JOptionPane.showConfirmDialog(JByteMod.instance, panel, JByteMod.res.getResource("find_class_by_name"),
+					2) == 0 && !cst.getText().isEmpty()) {
 				LazyListModel<SearchEntry> model = new LazyListModel<>();
-				for (final ClassNode c : jbm.getFile().getClasses().values()) {
-					for (final MethodNode m : c.methods) {
-						if (m.name.equals("main") && m.desc.equals("([Ljava/lang/String;)V")) {
-							// TODO: task
-							model.addElement(new SearchEntry(c, m, TextUtils.escape(TextUtils.max(c.name, 100))));
-						}
+				for (final ClassNode cn : jbm.getFile().getClasses().values()) {
+					if (cn.name != null && cn.name.contains(cst.getText())) {
+						// TODO: task
+						SearchEntry se = new SearchEntry(cn, cn.methods.get(0), TextUtils.escape(TextUtils.max(cn.name, 100)));
+						se.setText(TextUtils.toHtml(TextUtils.escape(TextUtils.max(cn.name, 100))));
+						model.addElement(se);
 					}
 				}
 				jbm.getSearchList().setModel(model);
 			}
 		});
+		search.add(findClass);
+
+		JMenuItem clazz_main = new JMenuItem(JByteMod.res.getResource("find_main_class"));
+		SwingUtils.desireFont(clazz_main,fontSize);
+		clazz_main.addActionListener(e -> {
+			if (jbm.getFile().getClasses() == null) {
+				return;
+			}
+			LazyListModel<SearchEntry> model = new LazyListModel<>();
+			for (final ClassNode c : jbm.getFile().getClasses().values()) {
+				for (final MethodNode m : c.methods) {
+					if (m.name.equals("main") && m.desc.equals("([Ljava/lang/String;)V")) {
+						// TODO: task
+						model.addElement(new SearchEntry(c, m, TextUtils.escape(TextUtils.max(c.name, 100))));
+					}
+				}
+			}
+			jbm.getSearchList().setModel(model);
+		});
 		searchUtils.add(clazz_main);
 
 		// From https://github.com/java-deobfuscator
 		JMenuItem signatureFix = new JMenuItem(JByteMod.res.getResource("signaturefix"));
-		signatureFix.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				if (jbm.getFile().getClasses() == null) {
-					return;
-				}
-				try {
-					for (final ClassNode classNode : jbm.getFile().getClasses().values()) {
-						if (classNode.signature != null) {
+		SwingUtils.desireFont(signatureFix,fontSize);
+		signatureFix.addActionListener(e -> {
+			if (jbm.getFile().getClasses() == null) {
+				return;
+			}
+			try {
+				for (final ClassNode classNode : jbm.getFile().getClasses().values()) {
+					if (classNode.signature != null) {
+						try {
+							CheckClassAdapter.checkClassSignature(classNode.signature);
+						} catch (IllegalArgumentException IAE) {
+							classNode.signature = null;
+						} catch (Throwable x) {
+							x.printStackTrace();
+						}
+					}
+					classNode.methods.forEach(methodNode -> {
+						if (methodNode.signature != null) {
 							try {
-								CheckClassAdapter.checkClassSignature(classNode.signature);
+								CheckClassAdapter.checkMethodSignature(methodNode.signature);
 							} catch (IllegalArgumentException IAE) {
-								classNode.signature = null;
+								methodNode.signature = null;
 							} catch (Throwable x) {
 								x.printStackTrace();
 							}
 						}
-						classNode.methods.forEach(methodNode -> {
-							if (methodNode.signature != null) {
-								try {
-									CheckClassAdapter.checkMethodSignature(methodNode.signature);
-								} catch (IllegalArgumentException IAE) {
-									methodNode.signature = null;
-								} catch (Throwable x) {
-									x.printStackTrace();
-								}
+					});
+					classNode.fields.forEach(fieldNode -> {
+						if (fieldNode.signature != null) {
+							try {
+								CheckClassAdapter.checkFieldSignature(fieldNode.signature);
+							} catch (IllegalArgumentException IAE) {
+								fieldNode.signature = null;
+							} catch (Throwable x) {
+								x.printStackTrace();
 							}
-						});
-						classNode.fields.forEach(fieldNode -> {
-							if (fieldNode.signature != null) {
-								try {
-									CheckClassAdapter.checkFieldSignature(fieldNode.signature);
-								} catch (IllegalArgumentException IAE) {
-									fieldNode.signature = null;
-								} catch (Throwable x) {
-									x.printStackTrace();
-								}
-							}
-						});
+						}
+					});
 
-					}
-				} catch (Throwable x) {
-					x.printStackTrace();
 				}
-				JOptionPane.showMessageDialog(null, JByteMod.res.getResource("finish_tip"),
-						JByteMod.res.getResource("signaturefix"), JOptionPane.INFORMATION_MESSAGE);
+			} catch (Throwable x) {
+				x.printStackTrace();
 			}
+			JOptionPane.showMessageDialog(null, JByteMod.res.getResource("finish_tip"),
+					JByteMod.res.getResource("signaturefix"), JOptionPane.INFORMATION_MESSAGE);
 		});
 		deobfTools.add(signatureFix);
 
 		// From https://github.com/java-deobfuscator and https://github.com/ItzSomebody/Radon/
 		JMenuItem access_fix = new JMenuItem(JByteMod.res.getResource("accessfixer"));
+		SwingUtils.desireFont(access_fix,fontSize);
 		access_fix.addActionListener(new ActionListener() {
 
 			@Override
@@ -428,35 +363,31 @@ public class MyMenuBar extends JMenuBar {
 
 		this.add(getSettings());
 		JMenu help = new JMenu(JByteMod.res.getResource("help"));
-		JMenuItem about = new JMenuItem(JByteMod.res.getResource("about"));
-		about.addActionListener(new ActionListener() {
+		SwingUtils.desireFont(help,fontSize);
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					new JAboutFrame(jbm).setVisible(true);
-				} catch (Exception ex) {
-					new ErrorDisplay(ex);
-				}
+		JMenuItem about = new JMenuItem(JByteMod.res.getResource("about"));
+		SwingUtils.desireFont(about,fontSize);
+		about.addActionListener(e -> {
+			try {
+				new JAboutFrame(jbm).setVisible(true);
+			} catch (Exception ex) {
+				new ErrorDisplay(ex);
 			}
 		});
 
 		help.add(about);
 		JMenuItem licenses = new JMenuItem(JByteMod.res.getResource("licenses"));
-		licenses.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-					JFrame jf = new JFrame();
-					jf.setBounds(100, 100, 700, 800);
-					jf.add(new JScrollPane(
-							new JTextArea(IOUtils.toString(MyMenuBar.class.getResourceAsStream("/resources/LICENSES")))));
-					jf.setTitle(JByteMod.res.getResource("licenses"));
-					jf.setVisible(true);
-				} catch (Exception ex) {
-					new ErrorDisplay(ex);
-				}
+		SwingUtils.desireFont(licenses,fontSize);
+		licenses.addActionListener(e -> {
+			try {
+				JFrame jf = new JFrame();
+				jf.setBounds(100, 100, 700, 800);
+				jf.add(new JScrollPane(
+						new JTextArea(IOUtils.toString(MyMenuBar.class.getResourceAsStream("/resources/LICENSES")))));
+				jf.setTitle(JByteMod.res.getResource("licenses"));
+				jf.setVisible(true);
+			} catch (Exception ex) {
+				new ErrorDisplay(ex);
 			}
 		});
 
@@ -516,10 +447,12 @@ public class MyMenuBar extends JMenuBar {
 	private JMenu getSettings() {
 		JMenu settings = new JMenu(JByteMod.res.getResource("settings"));
 		LanguageRes lr = JByteMod.res;
-		Options o = JByteMod.ops;
+		Options options = JByteMod.ops;
+		int fontSize = options.get("fontSize").getInteger();
+		SwingUtils.desireFont(settings,fontSize);
 		HashMap<String, JMenu> menus = new LinkedHashMap<>();
 		HashMap<String, JMenu> roots = new LinkedHashMap<>();
-		for (Option op : o.bools) {
+		for (Option op : options.getImportedOptions()) {
 			String group = op.getGroup();
 			String[] groups = group.split("_");
 			JMenu menu = null;
@@ -548,55 +481,22 @@ public class MyMenuBar extends JMenuBar {
 					}
 				}
 			}
-			switch (op.getType()) {
-			case BOOLEAN:
-				JCheckBoxMenuItem jmi = new JCheckBoxMenuItem(lr.getResource(op.getName()), op.getBoolean());
-				jmi.addActionListener(e -> {
-					op.setValue(jmi.isSelected());
-					o.save();
-					if (op.getName().equals("use_weblaf")) {
-						JByteMod.resetLAF();
-						JByteMod.restartGUI();
+			try {
+				if (op.getOptionRenderer() != null) {
+					if (menu != null) {
+						JMenuItem menuItem = op.getOptionRenderer().renderMenu(lr, op, options);
+						SwingUtils.desireFont(menuItem,fontSize);
+						menu.add(menuItem);
 					}
-				});
-				menu.add(jmi);
-				break;
-			case STRING:
-				JMenu jm = new JMenu(lr.getResource(op.getName()));
-				JTextField jtf = new JTextField(op.getString());
-				jtf.setPreferredSize(new Dimension(Math.max((int) jtf.getPreferredSize().getWidth(), 128),
-						(int) jtf.getPreferredSize().getHeight()));
-				jm.add(Box.createHorizontalGlue());
-				jm.add(jtf);
-				jtf.addFocusListener(new FocusAdapter() {
-					public void focusLost(FocusEvent e) {
-						op.setValue(jtf.getText());
-						o.save();
-					}
-				});
-				menu.add(jm);
-				break;
-			case INT:
-				jm = new JMenu(lr.getResource(op.getName()));
-				JFormattedTextField jnf = ClassDialogue.createNumberField(Integer.class, 0, Integer.MAX_VALUE);
-				jnf.setValue(op.getInteger());
-				jnf.setPreferredSize(new Dimension(Math.max((int) jnf.getPreferredSize().getWidth(), 64),
-						(int) jnf.getPreferredSize().getHeight()));
-				jm.add(jnf);
-				jnf.addFocusListener(new FocusAdapter() {
-					public void focusLost(FocusEvent e) {
-						op.setValue((int) jnf.getValue());
-						o.save();
-					}
-				});
-				menu.add(jm);
-				break;
-			default:
-				break;
+				}
+			} catch (Exception e){
+				JByteMod.LOGGER.log(op.getName());
+				throw new RuntimeException(e);
 			}
 		}
 		for (JMenu m : roots.values()) {
 			settings.add(m);
+			SwingUtils.desireFont(m,fontSize);
 		}
 		return settings;
 	}
